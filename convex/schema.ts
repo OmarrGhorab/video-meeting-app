@@ -6,9 +6,27 @@ export default defineSchema({
     name: v.string(),
     image: v.optional(v.string()),
     email: v.string(),
-    role: v.union(v.literal("host"), v.literal("participant")),
     clerkId: v.string(),
   }).index("by_clerk_id", ["clerkId"]),
+
+  meetings: defineTable({
+    title: v.string(),
+    description: v.string(),
+    startTime: v.number(),
+    endTime: v.optional(v.number()),
+    status: v.string(),
+    hostId: v.id("users"),
+    users: v.array(v.id("users")),
+    streamCallId: v.string(),
+
+  }).index("by_host", ["hostId"]).index('by_stream_call_id', ['streamCallId']),
+
+  comments: defineTable({
+    meetingId: v.id('meetings'),
+    userId: v.id('users'),
+    content: v.optional(v.string()),
+    rating: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index('by_meeting', ['meetingId']).index('by_user', ['userId'])
 });
 
-// https://faithful-buffalo-63.clerk.accounts.dev
