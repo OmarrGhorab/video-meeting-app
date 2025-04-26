@@ -31,7 +31,7 @@ export const getMeetingByStreamCallId = query({
     },
 
     handler: async (ctx, args) => {
-        await ctx.db.query('meetings').withIndex('by_stream_call_id', q => q.eq('streamCallId', args.streamCallId)).first();
+       return await ctx.db.query('meetings').withIndex('by_stream_call_id', q => q.eq('streamCallId', args.streamCallId)).first();
     },
 })
 
@@ -43,6 +43,7 @@ export const createMeeting = mutation({
         endTime: v.optional(v.number()),
         status: v.string(),
         hostId: v.id("users"),
+        hostName: v.string(),
         users: v.array(v.id("users")),
         streamCallId: v.string(),
     },

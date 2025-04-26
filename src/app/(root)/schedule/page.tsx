@@ -1,9 +1,7 @@
+import InterviewScheduleUI from "./MeetingScheduleUI";
+
 const page = () => {
-  return (
-    <div>
-      
-    </div>
-  )
+  return <InterviewScheduleUI />;
 }
 
 export default page
