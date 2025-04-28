@@ -15,11 +15,13 @@ export default defineSchema({
     startTime: v.number(),
     endTime: v.optional(v.number()),
     status: v.string(),
-    hostId: v.id("users"),
-    users: v.array(v.id("users")),
+    hostId: v.string(), 
+    users: v.array(v.string()), 
     streamCallId: v.string(),
-
-  }).index("by_host", ["hostId"]).index('by_stream_call_id', ['streamCallId']),
+    hostName: v.string(),
+  })
+  .index("by_host", ["hostId"])
+  .index('by_stream_call_id', ['streamCallId']),
 
   comments: defineTable({
     meetingId: v.id('meetings'),

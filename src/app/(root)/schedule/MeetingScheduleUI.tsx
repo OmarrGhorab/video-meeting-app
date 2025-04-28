@@ -35,6 +35,7 @@ function MeetingScheduleUI() {
   const [open, setOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
+
   const meetings = useQuery(api.meetings.getUserMeetings) ?? [];
   const users = useQuery(api.users.getUsers) ?? [];
 
@@ -46,20 +47,20 @@ function MeetingScheduleUI() {
     date: new Date(),
     time: "09:00",
     participantId: "",
-    hostIds: user?.id ? [user.id] : [],
+    hostId: user?.id || "", // ✅ single hostId
   });
 
   const scheduleMeeting = async () => {
     if (!client || !user) return;
-    if (!formData.participantId || formData.hostIds.length === 0) {
-      toast.error("Please select a participant and at least one host");
+    if (!formData.participantId) {
+      toast.error("Please select a participant");
       return;
     }
 
     setIsCreating(true);
 
     try {
-      const { title, description, date, time, participantId, hostIds } = formData;
+      const { title, description, date, time, participantId, hostId } = formData;
       const [hours, minutes] = time.split(":");
       const meetingDate = new Date(date);
       meetingDate.setHours(parseInt(hours), parseInt(minutes), 0);
@@ -76,17 +77,17 @@ function MeetingScheduleUI() {
           },
         },
       });
-
+      const hostName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
       await createMeeting({
         title,
         description,
         startTime: meetingDate.getTime(),
         status: "upcoming",
+        hostId, // no casting
+        users: [participantId, hostId], // no casting
         streamCallId: id,
-        participantId,
-        hostIds,
+        hostName,
       });
-
       setOpen(false);
       toast.success("Meeting scheduled successfully!");
 
@@ -96,7 +97,7 @@ function MeetingScheduleUI() {
         date: new Date(),
         time: "09:00",
         participantId: "",
-        hostIds: user?.id ? [user.id] : [],
+        hostId: user?.id || "",
       });
     } catch (error) {
       console.error(error);
@@ -105,45 +106,17 @@ function MeetingScheduleUI() {
       setIsCreating(false);
     }
   };
-
-  const addHost = (hostId: string) => {
-    if (!formData.hostIds.includes(hostId)) {
-      setFormData((prev) => ({
-        ...prev,
-        hostIds: [...prev.hostIds, hostId],
-      }));
-    }
-  };
-
-  const removeHost = (hostId: string) => {
-    if (hostId === user?.id) return;
-    setFormData((prev) => ({
-      ...prev,
-      hostIds: prev.hostIds.filter((id) => id !== hostId),
-    }));
-  };
-
-  const participants = users;
-  const hosts = users;
-
-  const selectedHosts = hosts.filter((u) =>
-    formData.hostIds.includes(u.clerkId)
-  );
-
-  const availableHosts = hosts.filter(
-    (u) => !formData.hostIds.includes(u.clerkId)
-  );
+  // Filter out the host from the participants to invite
+  const participants = users.filter(userObj => userObj.clerkId !== user?.id);
 
   return (
     <div className="container max-w-7xl mx-auto p-6 space-y-8">
       <div className="flex items-center justify-between">
-        {/* HEADER */}
         <div>
           <h1 className="text-3xl font-bold">Meetings</h1>
           <p className="text-muted-foreground mt-1">Schedule and manage meetings</p>
         </div>
 
-        {/* DIALOG */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="lg">Schedule Meeting</Button>
@@ -154,7 +127,6 @@ function MeetingScheduleUI() {
               <DialogTitle>Schedule Meeting</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              {/* TITLE */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Title</label>
                 <Input
@@ -164,7 +136,6 @@ function MeetingScheduleUI() {
                 />
               </div>
 
-              {/* DESCRIPTION */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Description</label>
                 <Textarea
@@ -175,7 +146,6 @@ function MeetingScheduleUI() {
                 />
               </div>
 
-              {/* PARTICIPANT */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Participant</label>
                 <Select
@@ -195,46 +165,7 @@ function MeetingScheduleUI() {
                 </Select>
               </div>
 
-              {/* HOSTS */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Hosts</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {selectedHosts.map((host) => (
-                    <div
-                      key={host.clerkId}
-                      className="inline-flex items-center gap-2 bg-secondary px-2 py-1 rounded-md text-sm"
-                    >
-                      <UserInfo user={host} />
-                      {host.clerkId !== user?.id && (
-                        <button
-                          onClick={() => removeHost(host.clerkId)}
-                          className="hover:text-destructive transition-colors"
-                        >
-                          <XIcon className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {availableHosts.length > 0 && (
-                  <Select onValueChange={addHost}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Add host" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableHosts.map((host) => (
-                        <SelectItem key={host.clerkId} value={host.clerkId}>
-                          <UserInfo user={host} />
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-
-              {/* DATE & TIME */}
               <div className="flex gap-4">
-                {/* CALENDAR */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Date</label>
                   <Calendar
@@ -246,7 +177,6 @@ function MeetingScheduleUI() {
                   />
                 </div>
 
-                {/* TIME */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Time</label>
                   <Select
@@ -267,7 +197,6 @@ function MeetingScheduleUI() {
                 </div>
               </div>
 
-              {/* ACTION BUTTONS */}
               <div className="flex justify-end gap-3 pt-4">
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
@@ -288,7 +217,6 @@ function MeetingScheduleUI() {
         </Dialog>
       </div>
 
-      {/* LOADING OR MEETING CARDS */}
       {!meetings ? (
         <div className="flex justify-center py-12">
           <Loader2Icon className="size-8 animate-spin text-muted-foreground" />

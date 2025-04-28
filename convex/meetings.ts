@@ -10,7 +10,7 @@ export const getUserMeetings = query({
         .query("users")
         .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
         .first();
-  
+        
       if (!user) throw new Error("User not found");
   
       // Get all meetings (or optimize later)
@@ -18,7 +18,7 @@ export const getUserMeetings = query({
   
       // Filter: show meetings where user is involved
       const userMeetings = meetings.filter((meeting) =>
-        meeting.users.includes(user._id)
+        meeting.users.includes(user.clerkId)
       );
   
       return userMeetings;
@@ -42,9 +42,9 @@ export const createMeeting = mutation({
         startTime: v.number(),
         endTime: v.optional(v.number()),
         status: v.string(),
-        hostId: v.id("users"),
+        hostId: v.string(),
         hostName: v.string(),
-        users: v.array(v.id("users")),
+        users: v.array(v.string()),
         streamCallId: v.string(),
     },
     handler: async (ctx, args) => {

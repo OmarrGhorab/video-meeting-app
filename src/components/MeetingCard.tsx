@@ -34,7 +34,7 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
         </div>
 
         <CardTitle>{meeting.title}</CardTitle>
-
+        <CardDescription className="line-clamp-2">Host: {meeting.hostName}</CardDescription>
         {meeting.description && (
           <CardDescription className="line-clamp-2">{meeting.description}</CardDescription>
         )}

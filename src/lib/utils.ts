@@ -44,6 +44,20 @@ export const getHostInfo = (users: User[], meetingId: string) => {
   };
 };
 
+export const getUserInfo = (users: User[], clerkId: string) => {
+  const user = users.find((u) => u._id === clerkId);
+  
+  return {
+    name: user?.name || "Unknown Name",
+    email: user?.email || "No Email",
+    image: user?.image || null,
+    initials: user?.name
+      ? user.name.split(" ").map((n) => n[0]?.toUpperCase()).join("").slice(0, 2)
+      : "NA",
+  };
+};
+
+
 export const calculateRecordingDuration = (startTime: string, endTime: string) => {
   const start = new Date(startTime);
   const end = new Date(endTime);
