@@ -25,8 +25,8 @@ http.route({
       });
     }
 
-    const payload = await request.json();
-    const body = JSON.stringify(payload); // providers need the raw body not the JSON 
+    const payload = await request.json(); 
+    const body = JSON.stringify(payload); // need the payload to be raw for verifiy the hook
 
     const wh = new Webhook(webhookSecret);
     let evt: WebhookEvent;
