@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Logo from '../../public/Logo.png'
 import DashboardBtn from "./DashboardBtn";
-import { Button } from "./ui/button";
 function Navbar() {
   return (
     <nav className="border-b py-2">
@@ -17,9 +16,7 @@ function Navbar() {
             <Image
                 src={Logo}
                 alt="Raven's meeting logo"
-                width={40} // or adjust to 32/48 as needed
-                height={40}
-                className="w-20 h-20 object-contain"
+                className="w-18 h-18 object-contain"
             />
         </Link>
 

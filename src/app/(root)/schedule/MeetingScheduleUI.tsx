@@ -24,10 +24,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import UserInfo from "@/components/UserInfo";
-import { Loader2Icon, XIcon } from "lucide-react";
+import { Loader2Icon, XIcon, Check, Plus } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { TIME_SLOTS } from "@/constants";
 import MeetingCard from "@/components/MeetingCard";
+import { X } from "lucide-react";
 
 function MeetingScheduleUI() {
   const client = useStreamVideoClient();
@@ -46,21 +47,21 @@ function MeetingScheduleUI() {
     description: "",
     date: new Date(),
     time: "09:00",
-    participantId: "",
-    hostId: user?.id || "", // ✅ single hostId
+    participantIds: [] as string[],
+    hostId: user?.id || "",
   });
 
   const scheduleMeeting = async () => {
     if (!client || !user) return;
-    if (!formData.participantId) {
-      toast.error("Please select a participant");
+    if (formData.participantIds.length === 0) {
+      toast.error("Please select at least one participant");
       return;
     }
 
     setIsCreating(true);
 
     try {
-      const { title, description, date, time, participantId, hostId } = formData;
+      const { title, description, date, time, participantIds, hostId } = formData;
       const [hours, minutes] = time.split(":");
       const meetingDate = new Date(date);
       meetingDate.setHours(parseInt(hours), parseInt(minutes), 0);
@@ -83,8 +84,8 @@ function MeetingScheduleUI() {
         description,
         startTime: meetingDate.getTime(),
         status: "upcoming",
-        hostId, // no casting
-        users: [participantId, hostId], // no casting
+        hostId,
+        users: [...participantIds, hostId],
         streamCallId: id,
         hostName,
       });
@@ -96,7 +97,7 @@ function MeetingScheduleUI() {
         description: "",
         date: new Date(),
         time: "09:00",
-        participantId: "",
+        participantIds: [],
         hostId: user?.id || "",
       });
     } catch (error) {
@@ -147,22 +148,75 @@ function MeetingScheduleUI() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Participant</label>
-                <Select
-                  value={formData.participantId}
-                  onValueChange={(participantId) => setFormData({ ...formData, participantId })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select participant" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {participants.map((p) => (
-                      <SelectItem key={p.clerkId} value={p.clerkId}>
-                        <UserInfo user={p} />
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label className="text-sm font-medium">Participants</label>
+                <div className="relative">
+                  <Select
+                    value={formData.participantIds[0] || ""}
+                    onValueChange={(value) => {
+                      if (!formData.participantIds.includes(value)) {
+                        setFormData({
+                          ...formData,
+                          participantIds: [...formData.participantIds, value],
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <div className="flex items-center gap-2">
+                        <Plus className="h-4 w-4 text-muted-foreground" />
+                        <SelectValue placeholder="Add participants" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {participants.map((p) => (
+                        <SelectItem 
+                          key={p.clerkId} 
+                          value={p.clerkId}
+                          className="cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2">
+                            {formData.participantIds.includes(p.clerkId) ? (
+                              <Check className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <div className="h-4 w-4" />
+                            )}
+                            <UserInfo user={p} />
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.participantIds.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.participantIds.map((participantId) => {
+                      const participant = participants.find(p => p.clerkId === participantId);
+                      if (!participant) return null;
+                      return (
+                        <div
+                          key={participantId}
+                          className="group flex items-center gap-2 bg-secondary/50 hover:bg-secondary px-3 py-1.5 rounded-full text-sm transition-colors"
+                        >
+                          <UserInfo user={participant} />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                participantIds: formData.participantIds.filter(
+                                  (id) => id !== participantId
+                                ),
+                              });
+                            }}
+                            className="ml-1 text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-4">

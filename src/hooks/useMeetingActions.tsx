@@ -2,19 +2,17 @@ import { useRouter } from "next/navigation";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import toast from "react-hot-toast";
 import { ToastMessage } from "@/components/ToastMessage";
-import { useUser } from "@clerk/nextjs";
 
 const useMeetingActions = () => {
   const router = useRouter();
   const client = useStreamVideoClient();
-  const { user } = useUser();
 
   const createInstantMeeting = async () => {
     if (!client) return;
 
     try {
       const id = crypto.randomUUID();
-      const call = client.call("default", id);
+      const call = client.call('default', id);
 
       await call.getOrCreate({
         data: {

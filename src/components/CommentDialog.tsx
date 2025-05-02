@@ -15,7 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
-import { getHostInfo, getUserInfo } from "@/lib/utils";
+import {  getUserInfo } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { format } from "date-fns";
 import { Label } from "./ui/label";
@@ -92,17 +92,17 @@ function CommentDialog({ meetingId }: { meetingId: Id<"meetings"> }) {
               <ScrollArea className="h-[240px]">
                 <div className="space-y-4">
                   {existingComments.map((comment, index) => {
-                    const interviewer = getUserInfo(users, comment.userId);
+                    const host = getUserInfo(users, comment.userId);
                     return (
                       <div key={index} className="rounded-lg border p-4 space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
-                              <AvatarImage src={interviewer.image!} />
-                              <AvatarFallback>{interviewer.initials}</AvatarFallback>
+                              <AvatarImage src={host.image!} />
+                              <AvatarFallback>{host.initials}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-sm font-medium">{interviewer.name}</p>
+                              <p className="text-sm font-medium">{host.name}</p>
                               <p className="text-xs text-muted-foreground">
                                 {format(comment._creationTime, "MMM d, yyyy • h:mm a")}
                               </p>
@@ -143,7 +143,7 @@ function CommentDialog({ meetingId }: { meetingId: Id<"meetings"> }) {
               <Textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your detailed comment about the candidate..."
+                placeholder="Share your detailed comment about the meeting..."
                 className="h-32"
               />
             </div>

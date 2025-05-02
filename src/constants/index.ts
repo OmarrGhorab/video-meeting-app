@@ -3,8 +3,6 @@ import { Users2, Video, CalendarClock, Archive } from "lucide-react";
 export const MEETING_CATEGORY = [
   { id: "upcoming", title: "Upcoming Meetings", variant: "outline" },
   { id: "completed", title: "Completed", variant: "secondary" },
-  { id: "succeeded", title: "Succeeded", variant: "default" },
-  { id: "failed", title: "Failed", variant: "destructive" },
 ] as const;
 
 export const TIME_SLOTS = [

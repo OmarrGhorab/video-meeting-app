@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import toast from "react-hot-toast";
-import LoaderUI from "@/components/LoaderUI";
+// import LoaderUI from "@/components/LoaderUI";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { getHostInfo, groupMeeting } from "@/lib/utils";
 import { MEETING_CATEGORY } from "@/constants";
 import CommentDialog from "@/components/CommentDialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Meeting = Doc<"meetings">;
 
@@ -32,7 +33,7 @@ function DashboardPage() {
     }
   };
 
-  if (!meetings || !users) return <LoaderUI />;
+  if (!meetings || !users) return <Skeleton />;
 
   const groupedMeetings = groupMeeting(meetings);
 

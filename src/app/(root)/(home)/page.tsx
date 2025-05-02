@@ -2,16 +2,13 @@
 import ActionCard from "@/components/ActionCard";
 import { Card } from "@/components/ui/card";
 import { QUICK_ACTIONS } from "@/constants";
-import { useQuery } from "convex/react";
 import { CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { api } from "../../../../convex/_generated/api";
 import MeetingModal from "@/components/MeetingModal";
 
 export default function Home() {
   const router = useRouter();
-  // const meetings = useQuery(api.meetings.getUserMeetings)
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"start" | "join">();
   
