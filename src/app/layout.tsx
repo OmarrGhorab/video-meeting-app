@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
+import { SyncUserOnLogin } from "@/components/SyncUserOnLogin";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <SignedIn>
+              <SyncUserOnLogin />
               <div className="min-h-screen">
                 <Navbar />
                 <main className="px-4 sm:px-6 lg:px-8">{children}</main>
