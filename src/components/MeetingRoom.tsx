@@ -35,57 +35,58 @@ function MeetingRoom() {
   }
 
   return (
-    <div>
-          {/* VIDEO LAYOUT */}
-          <div>
-            {layout === "grid" ? <PaginatedGridLayout /> : <SpeakerLayout />}
+    <div className="relative h-[calc(100vh-100px)] w-full overflow-hidden">
+      {/* VIDEO LAYOUT */}
+      <div className="relative h-full">
+        {layout === "grid" ? <PaginatedGridLayout /> : <SpeakerLayout />}
 
-            {/* PARTICIPANTS LIST OVERLAY */}
-            {showParticipants && (
-              <div className="absolute right-0 top-0 h-full w-[300px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <CallParticipantsList onClose={() => setShowParticipants(false)} />
-              </div>
-            )}
-          </div>
+        {/* PARTICIPANTS LIST OVERLAY */}
+        <div
+          className={`absolute right-[-5px] top-0 h-full w-[300px] p-8  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out ${
+            showParticipants ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <CallParticipantsList onClose={() => setShowParticipants(false)} />
+        </div>
+      </div>
 
-          {/* VIDEO CONTROLS */}
+      {/* VIDEO CONTROLS */}
+      <div className="absolute bottom-4 left-0 right-0">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2 flex-wrap justify-center px-4">
+            <CallControls onLeave={() => router.push("/")} />
 
-          <div className="absolute bottom-4 left-0 right-0">
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center gap-2 flex-wrap justify-center px-4">
-                <CallControls onLeave={() => router.push("/")} />
-
-                <div className="flex items-center gap-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="icon" className="size-10">
-                        <LayoutListIcon className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => setLayout("grid")}>
-                        Grid View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setLayout("speaker")}>
-                        Speaker View
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="size-10"
-                    onClick={() => setShowParticipants(!showParticipants)}
-                  >
-                    <UsersIcon className="size-4" />
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="size-10">
+                    <LayoutListIcon className="size-4" />
                   </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setLayout("grid")}>
+                    Grid View
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLayout("speaker")}>
+                    Speaker View
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-                  <EndCallButton />
-                </div>
-              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-10"
+                onClick={() => setShowParticipants(!showParticipants)}
+              >
+                <UsersIcon className="size-4" />
+              </Button>
+
+              <EndCallButton />
             </div>
           </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarIcon, CheckCircle2Icon, ClockIcon, XCircleIcon } from "lucide-react";
+import { CalendarIcon, ClockIcon } from "lucide-react";
 import { format } from "date-fns";
 import { getHostInfo, groupMeeting } from "@/lib/utils";
 import { MEETING_CATEGORY } from "@/constants";
 import CommentDialog from "@/components/CommentDialog";
-import { Skeleton } from "@/components/ui/skeleton";
+import LoaderUI from "@/components/LoaderUI";
 
 type Meeting = Doc<"meetings">;
 
@@ -33,7 +33,7 @@ function DashboardPage() {
     }
   };
 
-  if (!meetings || !users) return <Skeleton />;
+  if (!meetings || !users) return <LoaderUI />;
 
   const groupedMeetings = groupMeeting(meetings);
 
