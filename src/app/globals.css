@@ -113,10 +113,15 @@
 }
 
 @layer base {
+  
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+ .str-video__participant-details .str-video__participant-details__name {
+    color: white !important;
   }
 }

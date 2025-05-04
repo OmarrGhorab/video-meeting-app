@@ -5,8 +5,14 @@ import {
   PaginatedGridLayout,
   SpeakerLayout,
   useCallStateHooks,
+  useCall,
 } from "@stream-io/video-react-sdk";
-import { LayoutListIcon, LoaderIcon, UsersIcon } from "lucide-react";
+import {
+  LayoutListIcon,
+  LoaderIcon,
+  UsersIcon,
+  MessageSquareIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -17,14 +23,39 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import EndCallButton from "./EndCallButton";
+import {
+  Channel,
+  ChannelHeader,
+  Chat,
+  MessageInput,
+  VirtualizedMessageList,
+  Window,
+  useCreateChatClient,
+} from "stream-chat-react";
+import { useUser } from "@clerk/nextjs";
+import { streamTokenProvider } from "@/actions/stream.actions";
+import CustomVideoPlaceholder from "./CustomVideoPlaceholder";
 
 function MeetingRoom() {
   const router = useRouter();
   const [layout, setLayout] = useState<"grid" | "speaker">("speaker");
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const { useCallCallingState } = useCallStateHooks();
+  const { user } = useUser();
+  const call = useCall();
 
   const callingState = useCallCallingState();
+
+  const chatClient = useCreateChatClient({
+    apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY!,
+    tokenOrProvider: streamTokenProvider,
+    userData: {
+      id: user?.id!,
+      name: user?.firstName + " " + user?.lastName,
+      image: user?.imageUrl,
+    },
+  });
 
   if (callingState !== CallingState.JOINED) {
     return (
@@ -35,22 +66,49 @@ function MeetingRoom() {
   }
 
   return (
-    <div className="relative h-[calc(100vh-100px)] w-full overflow-hidden">
-      {/* VIDEO LAYOUT */}
-      <div className="relative h-full">
-        {layout === "grid" ? <PaginatedGridLayout /> : <SpeakerLayout />}
-
-        {/* PARTICIPANTS LIST OVERLAY */}
+    <div className="relative h-[calc(100vh-100px)] w-full overflow-hidden pt-2">
+      {/* FLEX WRAPPER TO ENABLE SIDE PANELS */}
+      <div className="relative h-full flex transition-all duration-300 ease-in-out">
+        {/* VIDEO AREA */}
         <div
-          className={`absolute right-[-5px] top-0 h-full w-[300px] p-8  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out ${
-            showParticipants ? "translate-x-0" : "translate-x-full"
+          className={`transition-all duration-300 ease-in-out ${
+            showChat || showParticipants ? "w-[calc(100%-300px)]" : "w-full"
           }`}
         >
-          <CallParticipantsList onClose={() => setShowParticipants(false)} />
+          {layout === "grid" ? <PaginatedGridLayout VideoPlaceholder={CustomVideoPlaceholder} /> : <SpeakerLayout VideoPlaceholder={CustomVideoPlaceholder} />}
         </div>
+
+        {/* PARTICIPANTS PANEL */}
+        {showParticipants && (
+          <div className="h-full w-[300px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <CallParticipantsList onClose={() => setShowParticipants(false)} />
+          </div>
+        )}
+
+        {/* CHAT PANEL */}
+        {showChat && chatClient && call && (
+          <div
+            className="h-full w-[300px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Chat client={chatClient}>
+              <Channel
+                channel={chatClient.channel("livestream", call.id, {
+                  name: "Chat",
+                })}
+              >
+                <Window>
+                  <ChannelHeader />
+                  <VirtualizedMessageList />
+                  <MessageInput />
+                </Window>
+              </Channel>
+            </Chat>
+          </div>
+        )}
       </div>
 
-      {/* VIDEO CONTROLS */}
+      {/* CONTROLS */}
       <div className="absolute bottom-4 left-0 right-0">
         <div className="flex flex-col items-center gap-4">
           <div className="flex items-center gap-2 flex-wrap justify-center px-4">
@@ -77,9 +135,24 @@ function MeetingRoom() {
                 variant="outline"
                 size="icon"
                 className="size-10"
-                onClick={() => setShowParticipants(!showParticipants)}
+                onClick={() => {
+                  setShowParticipants(!showParticipants);
+                  if (!showParticipants) setShowChat(false);
+                }}
               >
                 <UsersIcon className="size-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-10"
+                onClick={() => {
+                  setShowChat(!showChat);
+                  if (!showChat) setShowParticipants(false);
+                }}
+              >
+                <MessageSquareIcon className="size-4" />
               </Button>
 
               <EndCallButton />
@@ -90,4 +163,5 @@ function MeetingRoom() {
     </div>
   );
 }
+
 export default MeetingRoom;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
+import 'stream-chat-react/dist/css/v2/index.css'
 import ConvexClerkProvider from "@/components/providers/ConvexClerkProviders";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -18,6 +19,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
 
 export const metadata: Metadata = {
   title: "Create Next App",

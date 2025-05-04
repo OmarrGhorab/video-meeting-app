@@ -41,8 +41,8 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
 
             {/* VIDEO PREVIEW */}
             <div className="mt-4 flex-1 min-h-[400px] rounded-xl overflow-hidden bg-muted/50 border relative">
-              <div className="absolute inset-0">
-                <VideoPreview className="h-full w-full" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <VideoPreview className="h-full w-full object-cover" />
               </div>
             </div>
           </Card>
@@ -114,12 +114,9 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
 
                 {/* JOIN BTN */}
                 <div className="space-y-3 mt-8">
-                  <Button className="w-full" size="lg" onClick={handleJoin}>
+                  <Button className="w-full cursor-pointer" size="lg" onClick={handleJoin}>
                     Join Meeting
                   </Button>
-                  <p className="text-xs text-center text-muted-foreground">
-                    Do not worry, our team is super friendly! We want you to succeed. 🎉
-                  </p>
                 </div>
               </div>
             </div>
