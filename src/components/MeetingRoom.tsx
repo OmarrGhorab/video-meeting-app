@@ -35,6 +35,8 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { streamTokenProvider } from "@/actions/stream.actions";
 import CustomVideoPlaceholder from "./CustomVideoPlaceholder";
+import { EmojiPicker } from 'stream-chat-react/emojis';
+import {  SearchIndex } from 'emoji-mart';
 
 function MeetingRoom() {
   const router = useRouter();
@@ -69,26 +71,30 @@ function MeetingRoom() {
     <div className="relative h-[calc(100vh-100px)] w-full overflow-hidden pt-2">
       {/* FLEX WRAPPER TO ENABLE SIDE PANELS */}
       <div className="relative h-full flex transition-all duration-300 ease-in-out">
-        {/* VIDEO AREA */}
+        {/* VIDEO AREA */} 
         <div
           className={`transition-all duration-300 ease-in-out ${
-            showChat || showParticipants ? "w-[calc(100%-300px)]" : "w-full"
+            showChat || showParticipants ? "w-[calc(100%-400px)]" : "w-full"
           }`}
         >
           {layout === "grid" ? <PaginatedGridLayout VideoPlaceholder={CustomVideoPlaceholder} /> : <SpeakerLayout VideoPlaceholder={CustomVideoPlaceholder} />}
         </div>
 
         {/* PARTICIPANTS PANEL */}
-        {showParticipants && (
-          <div className="h-full w-[300px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <CallParticipantsList onClose={() => setShowParticipants(false)} />
-          </div>
-        )}
+        <div
+          className={`absolute right-0 top-0 h-full w-[400px] border-[2px] rounded-[10px] p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out transform ${
+            showParticipants ? "translate-x-0" : "translate-x-full"
+          } shadow-xl z-50 overflow-y-auto`}
+        >
+          <CallParticipantsList onClose={() => setShowParticipants(false)} />
+        </div>
 
         {/* CHAT PANEL */}
-        {showChat && chatClient && call && (
+        {chatClient && call && (
           <div
-            className="h-full w-[300px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+            className={`absolute right-0 top-0 h-full border-[2px] rounded-[10px] w-[400px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ease-in-out transform ${
+              showChat ? "translate-x-0" : "translate-x-full"
+            } shadow-xl z-50`}
             onClick={(e) => e.stopPropagation()}
           >
             <Chat client={chatClient}>
@@ -96,11 +102,26 @@ function MeetingRoom() {
                 channel={chatClient.channel("livestream", call.id, {
                   name: "Chat",
                 })}
+                EmojiPicker={EmojiPicker} emojiSearchIndex={SearchIndex}
               >
                 <Window>
-                  <ChannelHeader />
-                  <VirtualizedMessageList />
-                  <MessageInput />
+                  <div className="flex flex-col h-full">
+                    <ChannelHeader />
+                    <div className="flex-1">
+                      <VirtualizedMessageList />
+                    </div>
+                    <div>
+                      <MessageInput 
+                        additionalTextareaProps={{
+                          onInput: (e) => {
+                            const target = e.target as HTMLTextAreaElement;
+                            target.style.height = '24px';
+                            target.style.height = target.scrollHeight + 'px';
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
                 </Window>
               </Channel>
             </Chat>
@@ -109,12 +130,14 @@ function MeetingRoom() {
       </div>
 
       {/* CONTROLS */}
-      <div className="absolute bottom-4 left-0 right-0">
+      <div className={`absolute bottom-0 left-0 right-0 transition-all duration-300 ease-in-out ${
+        showChat || showParticipants ? "right-[400px]" : "right-0"
+      }`}>
         <div className="flex flex-col items-center gap-4">
           <div className="flex items-center gap-2 flex-wrap justify-center px-4">
             <CallControls onLeave={() => router.push("/")} />
 
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-3 ${showChat || showParticipants ? "flex-wrap justify-center" : ""}`}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon" className="size-10">

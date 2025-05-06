@@ -1,19 +1,18 @@
-import hash from "string-hash"; // install this via `npm install string-hash`
+import hash from "string-hash";
 
-// Predefined color palettes similar to Google Meet with softer gradients
 const colorPalettes = [
-  // Blue palette
-  { start: [210, 45, 65], end: [230, 45, 75] },
-  // Green palette
-  { start: [120, 45, 65], end: [140, 45, 75] },
-  // Purple palette
-  { start: [270, 45, 65], end: [290, 45, 75] },
-  // Orange palette
-  { start: [30, 45, 65], end: [50, 45, 75] },
-  // Red palette
-  { start: [0, 45, 65], end: [20, 45, 75] },
-  // Teal palette
-  { start: [180, 45, 65], end: [200, 45, 75] },
+  // Blue: #76A6EA to #A0C3FF
+  { start: [214, 73, 69], end: [217, 100, 81] },
+  // Green: #7BCFA8 to #98D9B2
+  { start: [152, 47, 65], end: [143, 46, 72] },
+  // Purple: #B399D4 to #C5A8E0
+  { start: [265, 40, 71], end: [268, 44, 77] },
+  // Orange: #F6A187 to #FFBE9D
+  { start: [14, 85, 76], end: [21, 100, 80] },
+  // Red: #E67D8F to #F28B9C
+  { start: [349, 67, 70], end: [350, 77, 75] },
+  // Teal: #6FC2D0 to #8CD5DF
+  { start: [189, 50, 63], end: [189, 59, 72] },
 ];
 
 export function generateGradient(userId: string) {
@@ -21,13 +20,8 @@ export function generateGradient(userId: string) {
   const paletteIndex = base % colorPalettes.length;
   const palette = colorPalettes[paletteIndex];
   
-  // Add subtle variations to the colors
-  const hueVariation = (base * 7) % 20 - 10; // -10 to +10 variation
-  const saturationVariation = (base * 3) % 5 - 2; // -2 to +2 variation
-  const lightnessVariation = (base * 5) % 5 - 2; // -2 to +2 variation
+  const color1 = `hsl(${palette.start[0]}, ${palette.start[1]}%, ${palette.start[2]}%)`;
+  const color2 = `hsl(${palette.end[0]}, ${palette.end[1]}%, ${palette.end[2]}%)`;
 
-  const color1 = `hsl(${palette.start[0] + hueVariation}, ${palette.start[1] + saturationVariation}%, ${palette.start[2] + lightnessVariation}%)`;
-  const color2 = `hsl(${palette.end[0] + hueVariation}, ${palette.end[1] + saturationVariation}%, ${palette.end[2] + lightnessVariation}%)`;
-
-  return `linear-gradient(135deg, ${color1}, ${color2})`;
+  return `linear-gradient(45deg, ${color1}, ${color2})`;
 }

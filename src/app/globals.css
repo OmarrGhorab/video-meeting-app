@@ -124,4 +124,38 @@
  .str-video__participant-details .str-video__participant-details__name {
     color: white !important;
   }
+
+  .str-video__search-input__container {
+    background: transparent !important;
+    border: 1px solid gray !important;
+    color: black !important;
+  }
+
+  .dark .str-video__search-input__container {
+    color: #ffffff !important; 
+  }
+
+  .str-chat__container {
+    background-color: transparent !important;
+  }
+
+  .dark .str-chat__channel-header {
+    background-color: oklch(0.145 0 0) !important;
+    color: gray !important;
+  }
+
+  .dark .str-chat__virtual-list {
+    background-color: oklch(0.145 0 0) !important;
+  }
+
+  .dark .str-chat__message-input {
+    background-color: oklch(0.145 0 0) !important;
+  }
+
+  .dark .str-chat__empty-channel {
+    background-color: oklch(0.145 0 0) !important;
+  }
+  .dark .str-chat__message-textarea {
+    color: #ffffff !important;
+  }
 }
